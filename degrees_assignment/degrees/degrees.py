@@ -24,7 +24,7 @@ def load_data(directory):
             people[row["id"]] = {
                 "name": row["name"],
                 "birth": row["birth"],
-                "movies": set()
+                "movies": set(),
             }
             if row["name"].lower() not in names:
                 names[row["name"].lower()] = {row["id"]}
@@ -38,7 +38,7 @@ def load_data(directory):
             movies[row["id"]] = {
                 "title": row["title"],
                 "year": row["year"],
-                "stars": set()
+                "stars": set(),
             }
 
     # Load stars
@@ -55,7 +55,7 @@ def load_data(directory):
 def main():
     if len(sys.argv) > 2:
         sys.exit("Usage: python degrees.py [directory]")
-    directory = sys.argv[1] if len(sys.argv) == 2 else "large"
+    directory = sys.argv[1] if len(sys.argv) == 2 else "small"
 
     # Load data from files into memory
     print("Loading data...")
@@ -90,12 +90,48 @@ def shortest_path(source, target):
     that connect the source to the target.
 
     If no possible path, returns None.
-    
+
     Using breadth-first search.
     """
 
     # TODO
-    raise NotImplementedError
+    # Initialize the frontier to the starting position
+    start = Node(state=source, parent=None, action=None)
+    frontier = QueueFrontier()
+    frontier.add(start)
+    # Initialize an empty explored set
+    explored = set()
+    # Keep track of the path
+    path = []
+    # While the frontier is not empty
+    while True:
+        # If the frontier is empty, return None
+        if frontier.empty():
+            return None
+        # If the target is in the frontier, find the path
+        if frontier.contains_state(target):
+            # find the target node
+            for frontier_node in frontier.frontier:
+                if frontier_node.state == target:
+                    node = frontier_node
+                    break
+            # Backtrack to find the path
+            while node.parent is not None:
+                path.append((node.action, node.state))
+                node = node.parent
+            path.reverse()
+            return path
+        # Return the FIRST node from the frontier list, then remove it from the frontier list
+        node = frontier.remove()
+        # Add the node state (person_id) to the explored set
+        explored.add(node.state)
+        # Add neighbors to the frontier
+        for movie_id, person_id in neighbors_for_person(node.state):
+            if (not frontier.contains_state(person_id)) and (person_id not in explored):
+                child = Node(state=person_id, parent=node, action=movie_id)
+                frontier.add(child)
+
+    # raise NotImplementedError
 
 
 def person_id_for_name(name):
