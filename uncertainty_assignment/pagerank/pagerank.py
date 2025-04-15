@@ -104,6 +104,7 @@ def iterate_pagerank(corpus, damping_factor):
     for page in corpus:
         distribution[page] = 1 / len(corpus)
     while True:
+        print(f"Distribution: {distribution}")
         new_distribution = dict()
         for page in corpus:
             new_distribution[page] = (1 - damping_factor) / len(corpus)
@@ -113,6 +114,8 @@ def iterate_pagerank(corpus, damping_factor):
                 elif page in corpus[p]:
                     # If page is linked to by p, add the contribution from p
                     new_distribution[page] += damping_factor * distribution[p] / len(corpus[p])
+        print(f"New Distribution: {new_distribution}")
+        # Check for convergence
         diff = 0
         for page in new_distribution:
             diff += abs(new_distribution[page] - distribution[page])
